@@ -1,0 +1,14 @@
+* {
+    margin: 0;
+}
+
+body {
+    min-height: 1000vh;
+    overflow-x: hidden;
+    background-color: #384259;
+}
+
+canvas {
+    position: fixed;
+    transform: translateX(50%);
+}
