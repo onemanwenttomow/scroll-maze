@@ -9,8 +9,9 @@ var Engine = Matter.Engine,
     Render = Matter.Render,
     World = Matter.World,
     Bodies = Matter.Bodies;
-(Composites = Matter.Composites), (Body = Matter.Body);
-Events = Matter.Events;
+    Composites = Matter.Composites, 
+    Body = Matter.Body;
+    Events = Matter.Events;
 
 var moveBallLeft = false;
 var moveBallRight = false;
@@ -35,7 +36,7 @@ var render = Render.create({
     options: {
         height: h * blockWidth + blockWidth,
         width: w * blockWidth + blockWidth,
-        background: "#384259",
+        background: "#3f0097",
         wireframes: false,
     },
 });
@@ -62,7 +63,7 @@ var objectsToAddToWorld = [];
 
 var wallOptions = {
     render: {
-        fillStyle: "pink",
+        fillStyle: "#fff",
     },
     isStatic: true,
     label: "wall",
@@ -70,7 +71,7 @@ var wallOptions = {
 
 var ball = Bodies.circle(blockWidth, blockWidth, blockWidth / 2 - 1, {
     render: {
-        fillStyle: "#f73859",
+        fillStyle: "#ffadb9",
     },
     restitution: 0.6,
     label: "ball",
@@ -198,7 +199,7 @@ var goal = Bodies.rectangle(
         label: "goal",
         isStatic: true,
         render: {
-            fillStyle: "green",
+            fillStyle: "#ffadb9",
         },
     }
 );
@@ -222,12 +223,10 @@ ScrollTrigger.create({
     },
 });
 
-// document.addEventListener("click", function () {
-//     console.log("engine.world.gravity: ", engine.world.gravity);
-//     engine.world.gravity.x = 0;
-//     engine.world.gravity.y = -1;
-//     console.log("engine.world.gravity: ", engine.world.gravity);
-// });
+document.addEventListener("click", function () {
+});
+
+var gameWon = false;
 
 Matter.Events.on(engine, 'collisionStart', function(event) {
     var bodyA = event.pairs[0].bodyA.label;
@@ -236,5 +235,18 @@ Matter.Events.on(engine, 'collisionStart', function(event) {
     console.log('bodyA, bodyB: ',bodyA, bodyB);
     if (bodyA.includes("ball") && bodyB === "goal") {
         console.log("winner!!!")
+        gameWon = true;
+    }
+});
+
+Events.on(engine, 'beforeUpdate', function() {
+    if (gameWon) {
+        if (engine.world.bodies.filter(body => body.label === 'goal')[0].area > 800000) {
+            return;
+        }
+        console.log("you win :):):)!");
+        Body.scale(goal, 1.01, 1.01);
+        console.log('engine.world: ',engine.world.bodies.filter(body => body.label === 'goal')[0]);
+        return;
     }
 });
