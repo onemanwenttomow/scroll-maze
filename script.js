@@ -157,11 +157,8 @@ function rotateCanvas(scrollAmount) {
         degree += 360;
     }
     gravityCheck = Math.floor(degree);
-    console.log("gravityCheck: ", gravityCheck);
-
     engine.world.gravity.y = degToYGravity(gravityCheck);
     engine.world.gravity.x = degToXGravity(gravityCheck);
-
     canvas.style.transform = "translate(-50%, -50%) rotate(" + degree + "deg)";
 }
 
@@ -195,8 +192,8 @@ function degToXGravity(deg) {
 var goal = Bodies.rectangle(
     blockWidth + blockWidth * Math.floor(w / 2),
     blockWidth + blockWidth * Math.floor(w / 2),
-    blockWidth,
-    blockWidth,
+    blockWidth*1.1,
+    blockWidth*1.1,
     {
         label: "goal",
         isStatic: true,
@@ -225,9 +222,19 @@ ScrollTrigger.create({
     },
 });
 
-document.addEventListener("click", function () {
-    console.log("engine.world.gravity: ", engine.world.gravity);
-    engine.world.gravity.x = 0;
-    engine.world.gravity.y = -1;
-    console.log("engine.world.gravity: ", engine.world.gravity);
+// document.addEventListener("click", function () {
+//     console.log("engine.world.gravity: ", engine.world.gravity);
+//     engine.world.gravity.x = 0;
+//     engine.world.gravity.y = -1;
+//     console.log("engine.world.gravity: ", engine.world.gravity);
+// });
+
+Matter.Events.on(engine, 'collisionStart', function(event) {
+    var bodyA = event.pairs[0].bodyA.label;
+    var bodyB = event.pairs[0].bodyB.label;
+    console.log('collision!');
+    console.log('bodyA, bodyB: ',bodyA, bodyB);
+    if (bodyA.includes("ball") && bodyB === "goal") {
+        console.log("winner!!!")
+    }
 });
