@@ -136,14 +136,8 @@ function rotateCanvas(scrollAmount) {
     }
     gravityCheck = (Math.floor(degree));
     console.log('gravityCheck: ',gravityCheck);
-
-    if (gravityCheck <= -90) {
-        engine.world.gravity.x = -1;
-
-    }
    
     engine.world.gravity.y = degToYGravity(gravityCheck);
-    console.log('degToXGravity(gravityCheck): ',degToXGravity(gravityCheck));
     engine.world.gravity.x = degToXGravity(gravityCheck);
 
     canvas.style.transform = "translateX(50%) translateY(-40px) rotate(" + degree + "deg)";
