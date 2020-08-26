@@ -4,10 +4,7 @@
 var blockWidth = Math.floor(window.innerWidth / 100);
 
 setTimeout(function(){
-
-    window.scroll({
-        top: 2500, 
-        left: 0, 
+    document.getElementById('start').scrollIntoView({
         behavior: 'smooth'
       });
 },
