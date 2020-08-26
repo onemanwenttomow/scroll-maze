@@ -39,7 +39,7 @@ var render = Render.create({
         height: h*20 + 200,
         width: w*20 + 200,
         background: "#384259",
-        wireframes: false,
+        wireframes: false
     },
 });
 
@@ -59,7 +59,7 @@ function userCallback (x, y, value) {
     maze[x][y] = value === 0 ? 1 : 0;
 };
 
-console.log('maze: ',maze);
+// console.log('maze: ',maze);
 
 dm.create(userCallback);
 
@@ -124,13 +124,56 @@ var degree = 0;
 var gravityX = 0;
 var gravityY = 1;
 var gravityCheck = 0;
+
 function rotateCanvas(scrollAmount) {
     degree += scrollAmount/100;
+    if (degree > 360) {
+        degree -= 360;
+    }
+
+    if (degree < -360) {
+        degree += 360;
+    }
     gravityCheck = (Math.floor(degree));
     console.log('gravityCheck: ',gravityCheck);
-   
 
-    canvas.style.transform = "translateX(50%) rotate(" + degree + "deg)";
+    if (gravityCheck <= -90) {
+        engine.world.gravity.x = -1;
+
+    }
+   
+    engine.world.gravity.y = degToYGravity(gravityCheck);
+    console.log('degToXGravity(gravityCheck): ',degToXGravity(gravityCheck));
+    engine.world.gravity.x = degToXGravity(gravityCheck);
+
+    canvas.style.transform = "translateX(50%) translateY(-40px) rotate(" + degree + "deg)";
+}
+
+function degToYGravity(deg) {
+    deg = Math.abs(deg)
+    if (deg >= 0 && deg <= 90) {
+        return 1 - (deg/90);
+    } else if (deg > 90 && deg <= 180){
+        return 1 + (-deg/90);
+    } else if (deg > 180 && deg <= 270) {
+        return -(3 -(deg/90));
+    } else if (deg > 270 && deg <= 360) {
+        return (deg/90) - 3;
+    }
+}
+
+function degToXGravity(deg) {
+    var sign = Math.sign(deg);
+    deg = Math.abs(deg)
+    if (deg >= 0 && deg <= 90) {
+        return (deg/90) * sign;
+    } else if (deg > 90 && deg <= 180){
+        return (2 - (deg/90)) * sign;
+    } else if (deg > 180 && deg <= 270) {
+        return (2 - deg/90) * sign;
+    } else if (deg > 270 && deg <= 360) {
+        return (3 -deg/90) * sign;
+    }
 }
 
 ScrollTrigger.create({
