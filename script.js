@@ -1,25 +1,22 @@
 // https://colorhunt.co/palette/42533
 // https://greensock.com/scrolltrigger/
 
+var blockWidth = Math.floor(window.innerWidth / 100);
 
-
-
+console.log("blockWidth: ", blockWidth);
 
 var Engine = Matter.Engine,
     Render = Matter.Render,
     World = Matter.World,
     Bodies = Matter.Bodies;
-    Composites = Matter.Composites,
-    Body = Matter.Body;
-    Events = Matter.Events;
+(Composites = Matter.Composites), (Body = Matter.Body);
+Events = Matter.Events;
 
 var moveBallLeft = false;
 var moveBallRight = false;
 
 var gameOver = false;
 var gameWon = false;
-
-var circleRadius = 20;
 
 // create an engine
 var engine = Engine.create();
@@ -36,28 +33,26 @@ var render = Render.create({
     element: document.body,
     engine: engine,
     options: {
-        height: h*20 + 200,
-        width: w*20 + 200,
+        height: h * blockWidth + blockWidth,
+        width: w * blockWidth + blockWidth,
         background: "#384259",
-        wireframes: false
+        wireframes: false,
     },
 });
-
-
 
 var maze = new Array(w);
 for (let x = 0; x < w; x++) {
     maze[x] = new Array(h);
 }
 
-function userCallback (x, y, value) {
+function userCallback(x, y, value) {
     // console.log('x, y, value: ',x, y, value);
     if (x === 0 || y === 0 || x === w - 1 || y === h - 1) {
         maze[x][y] = 0; // create walls around edges of map
         return;
     }
     maze[x][y] = value === 0 ? 1 : 0;
-};
+}
 
 // console.log('maze: ',maze);
 
@@ -65,32 +60,57 @@ dm.create(userCallback);
 
 var objectsToAddToWorld = [];
 
-var wallOptions = { 
+var wallOptions = {
     render: {
-        fillStyle: 'pink'
+        fillStyle: "pink",
     },
     isStatic: true,
-    label: 'wall'
-}
+    label: "wall",
+};
 
-var ball =  Bodies.circle(100 , 100, 9, {
+var ball = Bodies.circle(blockWidth, blockWidth, blockWidth / 2 - 1, {
     render: {
-        fillStyle: '#f73859'
+        fillStyle: "#f73859",
     },
     restitution: 0.6,
-    label: 'ball'
+    label: "ball",
 });
 
-objectsToAddToWorld.push(Bodies.rectangle(80, h*20 - 220, 20, h*20 + 40, wallOptions));
-objectsToAddToWorld.push(Bodies.rectangle(w*20 + 100, h*20 - 220, 20, h*20 + 40, wallOptions));
-objectsToAddToWorld.push(Bodies.rectangle(h*20 - 220, 80, h*20 + 40, 20, wallOptions));
-objectsToAddToWorld.push(Bodies.rectangle(h*20 - 220, h*20 + 100, h*20 + 40, 20, wallOptions));
-objectsToAddToWorld.push(ball)
+objectsToAddToWorld.push(
+    Bodies.rectangle(
+        blockWidth - blockWidth,
+        h * blockWidth - blockWidth,
+        blockWidth,
+        2000,
+        wallOptions
+    )
+);
+objectsToAddToWorld.push(
+    Bodies.rectangle(
+        w * blockWidth + blockWidth,
+        h * blockWidth - blockWidth,
+        blockWidth,
+        2000,
+        wallOptions
+    )
+);
+objectsToAddToWorld.push(
+    Bodies.rectangle(0, blockWidth - blockWidth, 2000, blockWidth, wallOptions)
+);
+console.log("100 - blockWidth: ", blockWidth - blockWidth);
+objectsToAddToWorld.push(
+    Bodies.rectangle(
+        blockWidth - blockWidth,
+        h * blockWidth + blockWidth,
+        2000,
+        blockWidth,
+        wallOptions
+    )
+);
+objectsToAddToWorld.push(ball);
 
 // add all of the bodies to the world
 World.add(engine.world, objectsToAddToWorld);
-
-
 
 // run the engine
 Engine.run(engine);
@@ -102,31 +122,33 @@ function draw() {
     for (let x = 0; x < w; x++) {
         for (let y = 0; y < h; y++) {
             if (maze[x][y] === 1) {
-                // console.log('maze[x][y]: ',maze[x]);
-                // create a rectangle. 
-                
-                var wall = Bodies.rectangle(x*20 + 100, y*20 + 100, 20, 20, wallOptions);
-                // console.log('wall: ',wall);
+                var wall = Bodies.rectangle(
+                    x * blockWidth + blockWidth,
+                    y * blockWidth + blockWidth,
+                    blockWidth,
+                    blockWidth,
+                    wallOptions
+                );
                 World.add(engine.world, wall);
-            };
+            }
         }
     }
 }
 
-draw()
+draw();
 
 // function rotateOnScroll(angle) {
 //     Body.rotate(rotatableLedge, angle);
 // }
 
-var canvas = document.querySelector('canvas');
+var canvas = document.querySelector("canvas");
 var degree = 0;
 var gravityX = 0;
 var gravityY = 1;
 var gravityCheck = 0;
 
 function rotateCanvas(scrollAmount) {
-    degree += scrollAmount/100;
+    degree += scrollAmount / 100;
     if (degree > 360) {
         degree -= 360;
     }
@@ -134,41 +156,57 @@ function rotateCanvas(scrollAmount) {
     if (degree < -360) {
         degree += 360;
     }
-    gravityCheck = (Math.floor(degree));
-    console.log('gravityCheck: ',gravityCheck);
-   
+    gravityCheck = Math.floor(degree);
+    console.log("gravityCheck: ", gravityCheck);
+
     engine.world.gravity.y = degToYGravity(gravityCheck);
     engine.world.gravity.x = degToXGravity(gravityCheck);
 
-    canvas.style.transform = "translateX(50%) translateY(-40px) rotate(" + degree + "deg)";
+    canvas.style.transform = "translate(-50%, -50%) rotate(" + degree + "deg)";
 }
 
 function degToYGravity(deg) {
-    deg = Math.abs(deg)
+    deg = Math.abs(deg);
     if (deg >= 0 && deg <= 90) {
-        return 1 - (deg/90);
-    } else if (deg > 90 && deg <= 180){
-        return 1 + (-deg/90);
+        return 1 - deg / 90;
+    } else if (deg > 90 && deg <= 180) {
+        return 1 + -deg / 90;
     } else if (deg > 180 && deg <= 270) {
-        return -(3 -(deg/90));
+        return -(3 - deg / 90);
     } else if (deg > 270 && deg <= 360) {
-        return (deg/90) - 3;
+        return deg / 90 - 3;
     }
 }
 
 function degToXGravity(deg) {
     var sign = Math.sign(deg);
-    deg = Math.abs(deg)
+    deg = Math.abs(deg);
     if (deg >= 0 && deg <= 90) {
-        return (deg/90) * sign;
-    } else if (deg > 90 && deg <= 180){
-        return (2 - (deg/90)) * sign;
+        return (deg / 90) * sign;
+    } else if (deg > 90 && deg <= 180) {
+        return (2 - deg / 90) * sign;
     } else if (deg > 180 && deg <= 270) {
-        return (2 - deg/90) * sign;
+        return (2 - deg / 90) * sign;
     } else if (deg > 270 && deg <= 360) {
-        return (3 -deg/90) * sign;
+        return (3 - deg / 90) * sign;
     }
 }
+
+var goal = Bodies.rectangle(
+    blockWidth + blockWidth * Math.floor(w / 2),
+    blockWidth + blockWidth * Math.floor(w / 2),
+    blockWidth,
+    blockWidth,
+    {
+        label: "goal",
+        isStatic: true,
+        render: {
+            fillStyle: "green",
+        },
+    }
+);
+
+World.add(engine.world, goal);
 
 ScrollTrigger.create({
     start: "top top",
@@ -187,11 +225,9 @@ ScrollTrigger.create({
     },
 });
 
-
-document.addEventListener('click', function() {
-    console.log('engine.world.gravity: ',engine.world.gravity);
+document.addEventListener("click", function () {
+    console.log("engine.world.gravity: ", engine.world.gravity);
     engine.world.gravity.x = 0;
     engine.world.gravity.y = -1;
-    console.log('engine.world.gravity: ',engine.world.gravity);
-})
-
+    console.log("engine.world.gravity: ", engine.world.gravity);
+});
