@@ -3,6 +3,17 @@
 
 var blockWidth = Math.floor(window.innerWidth / 100);
 
+setTimeout(function(){
+
+    window.scroll({
+        top: 2500, 
+        left: 0, 
+        behavior: 'smooth'
+      });
+},
+
+500);
+
 console.log("blockWidth: ", blockWidth);
 
 var Engine = Matter.Engine,
