@@ -10,4 +10,4 @@
 
 ### Playable here -> https://hungry-allen-3ab3a5.netlify.app/
 
-![](game.png)
+![](game.PNG)
